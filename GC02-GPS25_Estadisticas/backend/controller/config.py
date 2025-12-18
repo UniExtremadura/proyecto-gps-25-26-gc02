@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # URL USUARIOS API
 USUARIOS_API_BASE_URL = os.getenv(
     "USUARIOS_API_BASE_URL",
-    "http://localhost:3000/api/usuarios"
+    "http://usuario-service:3000/api/usuarios"
 )
 USUARIOS_API_TOKEN = os.getenv("USUARIOS_API_TOKEN", "")  
 
@@ -13,18 +13,18 @@ USUARIOS_API_TOKEN = os.getenv("USUARIOS_API_TOKEN", "")
 # Ahora ponemos esto para que lea la variable de Docker:
 MS_USUARIOS_BASE_URL = os.getenv(
     "MS_USUARIOS_BASE_URL", 
-    "http://localhost:3000"
+    "http://usuario-service:3000"
 )
 # -------------------
 
 CONTENIDO_API_BASE_URL = os.getenv(
     "MS_CONTENIDO_BASE_URL", 
-    "http://localhost:8083/api"
+    "http://microservicio-contenido:8083/api"
 )
 
 COMUNIDAD_API_BASE_URL = os.getenv(
     "MS_COMUNIDAD_BASE_URL",
-    "http://localhost:8084"
+    "http://microservicio-comunidades:8084"
 )
 
 def setup_cors(app):

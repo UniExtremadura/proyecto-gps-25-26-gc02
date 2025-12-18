@@ -143,7 +143,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # URL Base del Microservicio de Usuarios
 # Si existe la variable de entorno la usa, si no, usa la de por defecto (localhost)
-USER_MICROSERVICE_URL = os.getenv('USER_MICROSERVICE_URL', 'http://localhost:3000/api/usuarios/')
+USER_MICROSERVICE_URL = os.getenv('USER_MICROSERVICE_URL', 'http://usuario-service:3000/api/usuarios/')
 
 ## Configuración CORS - Permite conexiones desde cualquier origen (para conectar con el frontend)
 CORS_ALLOW_ALL_ORIGINS = True

@@ -21,7 +21,7 @@ public class ArtistaClient {
     // IMPORTANTE: Asegúrate de que este puerto (3000) es donde corre tu backend de
     // usuarios.
     // Si usas otro puerto (ej. 8080), cámbialo aquí.
-    private String usuariosBaseUrl = "http://localhost:3000/api/usuarios";
+    private String usuariosBaseUrl = "http://usuario-service:3000/api/usuarios";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
