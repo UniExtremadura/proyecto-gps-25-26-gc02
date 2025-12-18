@@ -1,7 +1,12 @@
+version: "3.8"
+
 services:
-  postgres:
+  # =========================
+  # POSTGRES - USUARIOS
+  # =========================
+  postgres-usuarios:
     image: postgres:15
-    container_name: postgres_db
+    container_name: postgres_usuarios
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -10,7 +15,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_usuarios_data:/var/lib/postgresql/data
 
   usuario-service:
     build: ./GC02-GPS25_Usuario
@@ -20,9 +25,115 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      - postgres-usuarios
     command: sh -c "npx prisma migrate deploy && npm run dev"
 
-volumes:
-  postgres_data:
+  # =========================
+  # POSTGRES - ESTADISTICAS
+  # =========================
+  postgres-estadisticas:
+    image: postgres:16
+    container_name: postgres_estadisticas
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: estadisticas
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_estadisticas_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  estadisticas-service:
+    build: ./GC02-GPS25_Estadisticas
+    container_name: estadisticas-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres-estadisticas
+    volumes:
+      - ./GC02-GPS25_Estadisticas:/app
+    command: uvicorn backend.controller.fastapi:app --reload --host 0.0.0.0 --port 8000
+    environment:
+      DATABASE_URL: postgresql://postgres:password123@postgres-estadisticas:5432/estadisticas
+      USUARIOS_API_BASE_URL: http://usuario-service:3000/api/usuarios
+      MS_USUARIOS_BASE_URL: http://usuario-service:3000/
+      MS_CONTENIDO_BASE_URL: http://microservicio-contenido:8083/api
+      MS_COMUNIDAD_BASE_URL: http://microservicio-comunidades:8000/api
+
+  # =========================
+  # ORACLE XE - CONTENIDO
+  # =========================
+  oracle-db:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: oracle-db
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: manager_password
+      APP_USER: ASEE
+      APP_USER_PASSWORD: 12345
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD", "/opt/oracle/checkDBStatus.sh"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  microservicio-contenido:
+    build: ./GC02-GPS25_Contenido
+    container_name: microservicio-contenido
+    ports:
+      - "8083:8083"
+    depends_on:
+      oracle-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle-db:1521/XEPDB1
+      SPRING_DATASOURCE_USERNAME: ASEE
+      SPRING_DATASOURCE_PASSWORD: 12345
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 20000
+
+  # =========================
+  # MYSQL - COMUNIDADES
+  # =========================
+  mysql-comunidades:
+    image: mysql:8.0
+    container_name: mysql_comunidades
+    restart: always
+    environment:
+      MYSQL_DATABASE: db_comunidades
+      MYSQL_USER: user_comunidades
+      MYSQL_PASSWORD: password_comunidades
+      MYSQL_ROOT_PASSWORD: root_password_secreta
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  microservicio-comunidades:
+    build: ./GC02-GPS25_Comunidades
+    container_name: microservicio-comunidades
+    ports:
+      - "8084:8000"
+    depends_on:
+      - mysql-comunidades
+    volumes:
+      - ./GC02-GPS25_Comunidades:/app
+    environment:
+      DEBUG: "True"
+      USER_MICROSERVICE_URL: http://usuario-service:3000/api/usuarios/
+      SECRET_KEY: django-insecure-clave-secreta
+      MYSQL_DATABASE: db_comunidades
+      MYSQL_USER: user_comunidades
+      MYSQL_PASSWORD: password_comunidades
+      MYSQL_HOST: mysql-comunidades
+
+volumes:
+  postgres_usuarios_data:
+  postgres_estadisticas_data:
+  oracle_data:
+  mysql_data:
