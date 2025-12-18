@@ -1,0 +1,4 @@
+# application properties
+microservicio_contenido/src/main/resources/application.properties
+# compiled classes
+microservicio_contenido/target/
