@@ -29,7 +29,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // IMPORTANTE: usar allowedOriginPatterns con credenciales
-        config.setAllowedOriginPatterns(List.of("http://localhost:3333"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:3001"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
