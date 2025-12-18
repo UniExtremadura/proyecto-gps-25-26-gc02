@@ -77,7 +77,7 @@ services:
     volumes:
       - oracle_data:/opt/oracle/oradata
     healthcheck:
-      test: ["CMD", "/opt/oracle/checkDBStatus.sh"]
+      test: [ "CMD", "/opt/oracle/checkDBStatus.sh" ]
       interval: 20s
       timeout: 10s
       retries: 10
