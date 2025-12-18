@@ -1,0 +1,506 @@
+{
+	"info": {
+		"_postman_id": "3e1a5cd1-f38a-4be8-8b18-9f7a25554e9d",
+		"name": "Contenido API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43881386",
+		"_collection_link": "https://ada-6472271.postman.co/workspace/Ada's-Workspace~be9304b2-8f5b-4230-8fe7-6701c234ec92/collection/43881386-3e1a5cd1-f38a-4be8-8b18-9f7a25554e9d?action=share&source=collection_link&creator=43881386"
+	},
+	"item": [
+		{
+			"name": "CONTENIDOS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/api/contenidos?preciomin=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"contenidos"
+					],
+					"query": [
+						{
+							"key": "preciomin",
+							"value": "2"
+						},
+						{
+							"key": "preciomax",
+							"value": "10",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ELEMENTOS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/api/elementos/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"elementos",
+						"3"
+					],
+					"query": [
+						{
+							"key": "preciomin",
+							"value": "0",
+							"disabled": true
+						},
+						{
+							"key": "preciomax",
+							"value": "10",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST ELEMENTO",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Electric Dreams\",\r\n  \"descripcion\": \"Álbum debut de la banda SynthWave\",\r\n  \"precio\": 9.99,\r\n  \"esnovedad\": true,\r\n  \"esalbum\": true,\r\n  \"valoracion\": 4,\r\n  \"numventas\": 120,\r\n  \"urlFoto\": \"amazon\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/elementos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"elementos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ELEMENTO",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 1,\r\n  \"nombre\": \"BUll Dreams\"\r\n  \r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/elementos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"elementos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ELEMENTO",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Electric Dreams\",\r\n  \"descripcion\": \"Álbum debut de la banda SynthWave\",\r\n  \"precio\": 9.99,\r\n  \"esnovedad\": true,\r\n  \"esalbum\": true,\r\n  \"valoracion\": 4,\r\n  \"numventas\": 120,\r\n  \"urlFoto\": \"amazon\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/elementos/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"elementos",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GENEROS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/api/generos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"generos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GENERO",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Pop\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/generos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"generos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GENEROS",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Pep\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/generos/41",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"generos",
+						"41"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CANCIONES",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/api/canciones/artista/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"canciones",
+						"artista",
+						"1"
+					],
+					"query": [
+						{
+							"key": "idArtista",
+							"value": "2",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CANCIONES",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Electric\",\r\n  \"descripcion\": \"Cancion del album Electric\",\r\n  \"precio\": 9.99,\r\n  \"esnovedad\": true,\r\n  \"esalbum\": false,\r\n  \"valoracion\": 4,\r\n  \"numventas\": 120,\r\n  \"urlFoto\": \"amazo2n\",\r\n  \"artista\":1,\r\n  \"genero\":2,\r\n  \"subgenero\":2,\r\n  \"nombreAudio\": \"likeastone.mp3\",\r\n  \"numRep\": 0,\r\n  \"idalbum\": 21\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/canciones",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"canciones"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CANCIONES",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"idElemento\": 54,\r\n  \"precio\": 123\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/canciones",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"canciones"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CANCIONES",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/api/canciones/62",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"canciones",
+						"62"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VALORACIONES",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/api/usuarioValoraElem",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"usuarioValoraElem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VALORACION USER ELEM",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ idelem: 1,\r\niduser: 2\r\n\r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/usuarioValoraElem/2/61",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"usuarioValoraElem",
+						"2",
+						"61"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VALORAELEMENTO",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ idelem: 1,\r\niduser: 2\r\n\r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/usuarioValoraElem/21",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"usuarioValoraElem",
+						"21"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VALORA",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"idelem\": 21,\r\n\"iduser\": 1,\r\n\"valoracion\": 4,\r\n\"comentario\": \"muy chuli\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/usuarioValoraElem",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"usuarioValoraElem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VALORA",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"idelem\": 21,\r\n\"iduser\": 1,\r\n\"valoracion\": 2,\r\n\"comentario\": \"muy mal\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/usuarioValoraElem",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"usuarioValoraElem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VALORA",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Electric Dreams\",\r\n  \"descripcion\": \"Álbum debut de la banda SynthWave\",\r\n  \"precio\": 9.99,\r\n  \"esnovedad\": true,\r\n  \"esalbum\": true,\r\n  \"valoracion\": 4,\r\n  \"numventas\": 120,\r\n  \"urlFoto\": \"amazon\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://localhost:8083/api/usuarioValoraElem/1/21",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"usuarioValoraElem",
+						"1",
+						"21"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
