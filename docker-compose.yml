@@ -31,14 +31,7 @@ services:
     depends_on:
       - postgres-usuarios
     command: > # CREACION, INSERT, ARRANCA SERVICIO Y SE ESPERA ANTES
-      sh -c "
-      until psql "$DATABASE_URL" -c 'select 1'; do sleep 2; done &&
-      npx prisma migrate deploy &&
-      psql "$DATABASE_URL" -f ./scripts/usuarios.sql &&
-      npm run dev
-      "
-
-
+      sh -c " until psql "$DATABASE_URL" -c 'select 1'; do sleep 2; done && npx prisma migrate deploy && psql "$DATABASE_URL" -f ./scripts/usuarios.sql && npm run dev "
 
   # =========================
   # POSTGRES - ESTADISTICAS
@@ -102,16 +95,15 @@ services:
     container_name: microservicio-contenido
     ports:
       - "8083:8083"
-    # TRUCO 1: Si falla al conectar (porque Oracle duerme), se reinicia solo
+    # Si falla al conectar (porque Oracle duerme), se reinicia solo
     restart: on-failure
     depends_on:
-      - oracle-db # <--- TRUCO 2: Solo ponemos el nombre, borra las condiciones de abajo
-      # - condition: service_healthy  <--- BORRA O COMENTA ESTO
+      - oracle-db
     environment:
       SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle-db:1521/XEPDB1
       SPRING_DATASOURCE_USERNAME: ASEE
       SPRING_DATASOURCE_PASSWORD: 12345
-      # TRUCO 3: Baja el timeout de conexión de Java para que falle rápido y reintente rápido
+      # Baja el timeout de conexión de Java para que falle rápido y reintente rápido
       SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 5000
 
   # =========================
