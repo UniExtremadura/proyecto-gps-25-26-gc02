@@ -90,21 +90,21 @@ services:
       start_period: 60s
 
   microservicio-contenido:
-      build: ./GC02-GPS25_Contenido
-      container_name: microservicio-contenido
-      ports:
-        - "8083:8083"
-      # TRUCO 1: Si falla al conectar (porque Oracle duerme), se reinicia solo
-      restart: on-failure 
-      depends_on:
-        - oracle-db  # <--- TRUCO 2: Solo ponemos el nombre, borra las condiciones de abajo
-        # - condition: service_healthy  <--- BORRA O COMENTA ESTO
-      environment:
-        SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle-db:1521/XEPDB1
-        SPRING_DATASOURCE_USERNAME: ASEE
-        SPRING_DATASOURCE_PASSWORD: 12345
-        # TRUCO 3: Baja el timeout de conexión de Java para que falle rápido y reintente rápido
-        SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 5000
+    build: ./GC02-GPS25_Contenido
+    container_name: microservicio-contenido
+    ports:
+      - "8083:8083"
+    # TRUCO 1: Si falla al conectar (porque Oracle duerme), se reinicia solo
+    restart: on-failure
+    depends_on:
+      - oracle-db # <--- TRUCO 2: Solo ponemos el nombre, borra las condiciones de abajo
+      # - condition: service_healthy  <--- BORRA O COMENTA ESTO
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle-db:1521/XEPDB1
+      SPRING_DATASOURCE_USERNAME: ASEE
+      SPRING_DATASOURCE_PASSWORD: 12345
+      # TRUCO 3: Baja el timeout de conexión de Java para que falle rápido y reintente rápido
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 5000
 
   # =========================
   # MYSQL - COMUNIDADES
@@ -146,7 +146,7 @@ services:
   # FRONTEND - VIEW
   # =========================
   frontend-service:
-    build: 
+    build:
       context: ./GC02-GPS25_Frontend
       dockerfile: Dockerfile
     container_name: frontend-service
