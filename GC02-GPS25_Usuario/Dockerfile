@@ -1,6 +1,9 @@
 #Imagen base
 FROM node:18-alpine
 
+# instalar cliente postgres, PSQL ya que no esta en alpine
+RUN apk add --no-cache postgresql-client
+
 #Directorio de trabajo
 WORKDIR /app
 

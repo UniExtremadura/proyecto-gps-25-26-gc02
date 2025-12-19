@@ -16,7 +16,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_usuarios_data:/var/lib/postgresql/data
-      - ./scripts-db/usuarios.sql:/docker-entrypoint-initdb.d/usuarios.sql
+      #- ./scripts-db/usuarios.sql:/docker-entrypoint-initdb.d/usuarios.sql
 
   usuario-service:
     build: ./GC02-GPS25_Usuario
@@ -30,7 +30,15 @@ services:
 
     depends_on:
       - postgres-usuarios
-    command: sh -c "npx prisma db push && npm run dev"
+    command: > # CREACION, INSERT, ARRANCA SERVICIO Y SE ESPERA ANTES
+      sh -c "
+      until psql "$DATABASE_URL" -c 'select 1'; do sleep 2; done &&
+      npx prisma migrate deploy &&
+      psql "$DATABASE_URL" -f ./scripts/usuarios.sql &&
+      npm run dev
+      "
+
+
 
   # =========================
   # POSTGRES - ESTADISTICAS
