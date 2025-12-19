@@ -1,10 +1,10 @@
 export const BASE_URL = "";
 //export const BASE_URL = "http://localhost:8000"; // URL DE PRODUCCION
-export const BASE_URL_CONTENIDO = "http://microservicio-contenido:8083/api";
+export const BASE_URL_CONTENIDO = "http://localhost:8083/api";
 
-export const BASE_URL_USUARIOS = "http://usuario-service:3000/api/usuarios";
-export const BASE_URL_ESTADISTICAS = "http://microservicio-estadisticas:8000";
-export const BASE_URL_COMUNIDADES = "http://microservicio-comunidades:8084/comunidad";
+export const BASE_URL_USUARIOS = "http://localhost:3000/api/usuarios";
+export const BASE_URL_ESTADISTICAS = "http://localhost:8000";
+export const BASE_URL_COMUNIDADES = "http://localhost:8084/comunidad";
 export const CLOUD_URL = "https://api.cloudinary.com/v1_1/dfwjm0jwx/auto/upload/" // URL PARA SUBIR ARCHIVOS
 
 // URLs PARA OBTENER ARCHIVOS
