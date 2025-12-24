@@ -1,0 +1,206 @@
+version: "3.8"
+
+services:
+  # =========================
+  # POSTGRES - USUARIOS
+  # =========================
+  postgres-usuarios:
+    image: postgres:15
+    container_name: postgres_usuarios
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: Usuarios
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_usuarios_data:/var/lib/postgresql/data
+      #- ./scripts-db/usuarios.sql:/docker-entrypoint-initdb.d/usuarios.sql
+  usuario-service:
+    build: ./GC02-GPS25_Usuario
+    container_name: usuario-service
+    env_file:
+      - ./GC02-GPS25_Usuario/.env
+    ports:
+      - "3000:3000"
+    restart: on-failure
+    depends_on:
+      - postgres-usuarios
+    volumes:
+      - ./scripts-db/usuarios.sql:/app/scripts/usuarios.sql
+    command: >
+      sh -c "
+      echo 'Esperando a PostgreSQL...' &&
+      until psql \"$$DATABASE_URL\" -c 'select 1'; do sleep 2; done &&
+      echo 'Base de datos lista. Creando tablas con Prisma...' &&
+      npx prisma db push --accept-data-loss &&
+      echo 'Tablas creadas. Insertando datos de prueba...' &&
+      psql \"$$DATABASE_URL\" -f /app/scripts/usuarios.sql &&
+      echo 'Todo listo. Iniciando aplicación...' &&
+      npm run dev
+      "
+
+  # =========================
+  # POSTGRES - ESTADISTICAS
+  # =========================
+  postgres-estadisticas:
+    image: postgres:16
+    container_name: postgres_estadisticas
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: estadisticas
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_estadisticas_data:/var/lib/postgresql/data
+      # Renombramos a 01-init para que se ejecute primero (crear tablas)
+      - ./GC02-GPS25_Estadisticas/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      # Renombramos a 02-estadisticas para que se ejecute segundo (insertar datos)
+      - ./GC02-GPS25_Estadisticas/02-estadisticas.sql:/docker-entrypoint-initdb.d/02-estadisticas.sql
+
+  estadisticas-service:
+    build: ./GC02-GPS25_Estadisticas
+    container_name: estadisticas-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres-estadisticas
+    volumes:
+      - ./GC02-GPS25_Estadisticas:/app
+    command: uvicorn backend.controller.fastapi:app --reload --host 0.0.0.0 --port 8000
+    environment:
+      DATABASE_URL: postgresql://postgres:password123@postgres-estadisticas:5432/estadisticas
+      USUARIOS_API_BASE_URL: http://usuario-service:3000/api/usuarios
+      MS_USUARIOS_BASE_URL: http://usuario-service:3000/
+      MS_CONTENIDO_BASE_URL: http://microservicio-contenido:8083/api
+      MS_COMUNIDAD_BASE_URL: http://microservicio-comunidades:8000/api
+
+  # =========================
+  # ORACLE XE - CONTENIDO
+  # =========================
+  oracle-db:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: oracle-db
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: manager_password
+      APP_USER: ASEE
+      APP_USER_PASSWORD: 12345
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+      - ./scripts-db/contenido.sql:/container-entrypoint-initdb.d/contenido.sql
+    healthcheck:
+      test: [ "CMD", "/opt/oracle/checkDBStatus.sh" ]
+      interval: 20s
+      timeout: 10s
+      retries: 1000000
+      start_period: 60s
+
+  microservicio-contenido:
+    build: ./GC02-GPS25_Contenido
+    container_name: microservicio-contenido
+    ports:
+      - "8083:8083"
+    # Si falla al conectar (porque Oracle duerme), se reinicia solo
+    restart: on-failure
+    depends_on:
+      - oracle-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle-db:1521/XEPDB1
+      SPRING_DATASOURCE_USERNAME: ASEE
+      SPRING_DATASOURCE_PASSWORD: 12345
+      # Baja el timeout de conexión de Java para que falle rápido y reintente rápido
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 5000
+
+  # =========================
+  # MYSQL - COMUNIDADES
+  # =========================
+  mysql-comunidades:
+    image: mysql:8.0
+    container_name: mysql_comunidades
+    environment:
+      MYSQL_DATABASE: db_comunidades
+      MYSQL_USER: user_comunidades
+      MYSQL_PASSWORD: password_comunidades
+      MYSQL_ROOT_PASSWORD: root_password_secreta
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    #  - ./scripts-db/comunidades.sql:/docker-entrypoint-initdb.d/comunidades.sql
+
+  microservicio-comunidades:
+    build: ./GC02-GPS25_Comunidades
+    container_name: microservicio-comunidades
+    ports:
+      - "8084:8000"
+    depends_on:
+      - mysql-comunidades
+    restart: on-failure
+    volumes:
+      - ./GC02-GPS25_Comunidades:/app
+    environment:
+      DEBUG: "True"
+      USER_MICROSERVICE_URL: http://usuario-service:3000/api/usuarios/
+      SECRET_KEY: django-insecure-clave-secreta
+      MYSQL_DATABASE: db_comunidades
+      MYSQL_USER: user_comunidades
+      MYSQL_PASSWORD: password_comunidades
+      MYSQL_HOST: mysql-comunidades
+
+    command: >
+      sh -c "cd mymicroservice && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+  # =========================
+  # CARGADOR DE DATOS (SEEDER)
+  # =========================
+  seed-comunidades:
+    image: mysql:8.0
+    container_name: seed_comunidades
+    depends_on:
+      - mysql-comunidades
+      - microservicio-comunidades
+    volumes:
+      - ./scripts-db/comunidades.sql:/data/comunidades.sql
+    # Este comando:
+    # 1. Espera 20 segundos (para que Django cree las tablas)
+    # 2. Ejecuta el comando mysql para importar los datos
+    command: >
+      sh -c "echo 'Esperando a que Django migre las tablas...' && 
+             sleep 40 && 
+             mysql -h mysql-comunidades -u user_comunidades -ppassword_comunidades db_comunidades < /data/comunidades.sql &&
+             echo '¡Datos importados correctamente!'"
+
+  # =========================
+  # FRONTEND - VIEW
+  # =========================
+  frontend-service:
+    build:
+      context: ./GC02-GPS25_Frontend
+      dockerfile: Dockerfile
+    container_name: frontend-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      # Si el frontend necesita conectarse a los backends desde el navegador (cliente),
+      # usa las URLs públicas (localhost). Si es SSR (servidor), usa los nombres de servicio.
+      - REACT_APP_USUARIOS_URL=http://localhost:3000
+      - REACT_APP_ESTADISTICAS_URL=http://localhost:8000
+      - REACT_APP_CONTENIDO_URL=http://localhost:8083
+      - REACT_APP_COMUNIDADES_URL=http://localhost:8084
+    depends_on:
+      - usuario-service
+      - estadisticas-service
+      - microservicio-contenido
+      - microservicio-comunidades
+
+volumes:
+  postgres_usuarios_data:
+  postgres_estadisticas_data:
+  oracle_data:
+  mysql_data:
